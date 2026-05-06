@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(curl -v http://localhost:5100/api/v2/version)",
+      "Bash(curl -s http://localhost:5100/api/v2/version)",
+      "Bash(find /home -name \"*pwpush*\" -o -name \"*password*push*\" 2>/dev/null | head -20)",
+      "Read(//home/**)",
+      "Bash(find /home/radunan -name \".env*\" -type f 2>/dev/null | head -20)",
+      "Read(//home/radunan/**)",
+      "Read(//opt/**)",
+      "Read(//usr/local/**)",
+      "Read(//var/**)",
+      "Read(//tmp/**)",
+      "Bash(npm list *)",
+      "Bash(curl -s --connect-timeout 3 http://localhost:5100/api/v2/version)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack --yes)"
+    ]
+  }
+}
