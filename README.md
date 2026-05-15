@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PwPush Frontend
 
-## Getting Started
+Vlastní Next.js frontend pro [Password Pusher (pwpush)](https://github.com/pglombardo/PasswordPusher) OSS instanci.
 
-First, run the development server:
+## Stack
+
+- **Next.js 14** (App Router, TypeScript)
+- **Tailwind CSS v3** + vlastní shadcn/ui komponenty
+- **Sonner** — toast notifikace
+- **react-dropzone** — drag & drop nahrávání souborů
+
+## Předpoklady
+
+- Node.js 18+ a npm
+- Docker (pro spuštění pwpush)
+
+---
+
+## 1. Spuštění pwpush serveru
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker run -d -p 5100:5100 --name pwpush pglombardo/pwpush:latest
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Server bude dostupný na `http://localhost:5100`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 2. Získání API tokenu
 
-## Learn More
+1. Otevřete `http://localhost:5100` v prohlížeči
+2. Zaregistrujte se nebo přihlaste
+3. Přejděte do **Account → API Token**
+4. Zkopírujte token
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 3. Konfigurace prostředí
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+cp .env.example .env.local
+```
 
-## Deploy on Vercel
+Upravte `.env.local`:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```env
+PWPUSH_API_BASE=http://localhost:5100
+PWPUSH_API_TOKEN=váš_token_zde
+NEXT_PUBLIC_PWPUSH_BASE=http://localhost:5100
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **Bezpečnost:** `PWPUSH_API_TOKEN` je čten pouze na serveru (Next.js API routes). Nikdy není
+> exponován klientovi. `NEXT_PUBLIC_PWPUSH_BASE` je použit pouze pro přímé download linky k souborům.
+
+---
+
+## 4. Instalace a spuštění
+
+```bash
+npm install
+npm run dev
+```
+
+Aplikace bude dostupná na `http://localhost:3000`.
+
+---
+
+## Stránky
+
+| Cesta                      | Popis                                        |
+| -------------------------- | -------------------------------------------- |
+| `/`                        | Formulář pro vytvoření nového tajemství      |
+| `/s/[token]`               | Zobrazení tajemství příjemcem (s gate flow)  |
+| `/dashboard`               | Přehled aktivních a expirovaných pushů       |
+| `/dashboard/[token]/audit` | Audit log přístupů                           |
+| `/health`                  | Debug stav připojení k pwpush                |
+
+## API Routes (proxy)
+
+Všechna komunikace s pwpush API probíhá přes Next.js route handlers, které injektují API token:
+
+| Route                       | Metoda | Popis                                    |
+| --------------------------- | ------ | ---------------------------------------- |
+| `/api/version`              | GET    | Verze pwpush                             |
+| `/api/pushes`               | POST   | Vytvoření pushe (JSON i multipart)       |
+| `/api/pushes/[token]`       | GET    | Načtení obsahu (+ `?passphrase=`)        |
+| `/api/pushes/[token]`       | DELETE | Expirace pushe                           |
+| `/api/pushes/[token]/audit` | GET    | Audit log                                |
+| `/api/pushes/active`        | GET    | Aktivní pushe                            |
+| `/api/pushes/expired`       | GET    | Expirované pushe                         |
+# pwpush_severotisk
