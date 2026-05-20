@@ -3,16 +3,21 @@ services:
     image: pglombardo/pwpush
     restart: unless-stopped
     # port 5100 není exponován ven — dostupný pouze pro frontend uvnitř sítě
+    volumes:
+      - pwpush_data:/opt/PasswordPusher/storage
 
   frontend:
     build: .
     restart: unless-stopped
     ports:
       - "3000:3000"
+    env_file:
+      - .env.production
     environment:
-      # pwpush je dostupný přes název služby uvnitř Docker sítě
+      # přepíše PWPUSH_API_BASE z .env.production — uvnitř Dockeru je pwpush dostupný přes název služby
       PWPUSH_API_BASE: http://pwpush:5100
-      PWPUSH_EMAIL: ${PWPUSH_EMAIL}
-      PWPUSH_TOKEN: ${PWPUSH_TOKEN}
     depends_on:
       - pwpush
+
+volumes:
+  pwpush_data:

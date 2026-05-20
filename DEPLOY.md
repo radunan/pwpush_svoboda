@@ -22,10 +22,21 @@ Zaměstnanci přistupují pouze na port 3000. pwpush není exponován ven.
 - **OS:** Linux (Ubuntu 22.04+ doporučeno)
 - **Docker:** verze 20+ včetně Docker Compose (plugin `docker compose`)
 
+**Žádná další služba není potřeba.** Docker zajistí vše — Node.js, závislosti i automatický restart. Stačí mít funkční Docker.
+
 Ověření:
 ```bash
 docker --version
 docker compose version
+```
+
+### Automatický start po restartu serveru
+
+Docker démon se na Ubuntu spouští automaticky. Kontejnery mají v `docker-compose.yml` nastaveno `restart: unless-stopped` — po restartu serveru nastartují samy bez zásahu. Ověřte, že Docker démon je povolen:
+
+```bash
+systemctl enable docker
+systemctl status docker
 ```
 
 ---
@@ -56,9 +67,25 @@ Nejprve spusťte pouze pwpush, abyste mohli vytvořit firemní účet:
 docker compose up pwpush -d
 ```
 
+pwpush při prvním spuštění vyžaduje **aktivační kód** — najdete ho v logu kontejneru:
+
+```bash
+docker compose logs pwpush | grep -i "token\|code\|setup\|first"
+```
+
+Hledáte řádek podobný tomuto:
+```
+First time run! Your setup token is: XXXXXXXXXXXXXXXX
+```
+
 Poté:
 1. Otevřete `http://adresa-serveru:5100` v prohlížeči
-2. Pokud se zobrazí stránka prvního spuštění, dokončete nastavení
+   - Pokud je server bez GUI, použijte SSH tunel na svém počítači:
+     ```bash
+     ssh -L 5100:localhost:5100 user@adresa-serveru
+     ```
+     a otevřete `http://localhost:5100` lokálně
+2. Zadejte aktivační kód z logů
 3. Zaregistrujte firemní účet (např. `admin@severotisk.cz`)
 4. Po přihlášení přejděte na **Profile → API Access**
 5. Zkopírujte **API Token**
@@ -80,6 +107,8 @@ PWPUSH_TOKEN=zkopirovaný_token_z_pwpush
 ```
 
 > **Důležité:** `.env.production` nikdy necommitujte do gitu — je v `.gitignore`.
+
+> **Poznámka k `.env` souboru:** Docker Compose čte proměnné přímo z `.env.production` pomocí direktivy `env_file` v `docker-compose.yml`. Není potřeba přejmenovávat soubor ani nastavovat systémové proměnné prostředí ručně.
 
 ---
 
