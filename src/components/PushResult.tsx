@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
+import { useT } from '@/context/LanguageContext'
 
 interface Props {
   token: string
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function PushResult({ token, onReset }: Props) {
+  const t = useT()
   const [copied, setCopied] = useState(false)
   const [showQr, setShowQr] = useState(false)
   const url = typeof window !== 'undefined'
@@ -31,8 +33,8 @@ export default function PushResult({ token, onReset }: Props) {
           </svg>
         </div>
         <div>
-          <p className="text-base font-semibold text-[var(--fg)]">Odkaz byl vytvořen</p>
-          <p className="text-sm text-[var(--muted-col)]">Zkopírujte a pošlete příjemci.</p>
+          <p className="text-base font-semibold text-[var(--fg)]">{t.result.title}</p>
+          <p className="text-sm text-[var(--muted-col)]">{t.result.subtitle}</p>
         </div>
       </div>
 
@@ -48,7 +50,7 @@ export default function PushResult({ token, onReset }: Props) {
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          title="Otevřít odkaz"
+          title={t.result.openLink}
           className="h-10 w-10 flex items-center justify-center rounded-lg border border-[var(--border-col)] bg-white hover:border-brand hover:text-brand text-[var(--muted-col)] transition-colors shrink-0"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
@@ -60,7 +62,7 @@ export default function PushResult({ token, onReset }: Props) {
           className="h-10 px-4 text-sm font-semibold rounded-lg transition-colors shrink-0 text-white"
           style={{ backgroundColor: copied ? '#0c496c' : '#00a3e4' }}
         >
-          {copied ? 'Zkopírováno!' : 'Kopírovat'}
+          {copied ? t.result.copied : t.result.copy}
         </button>
       </div>
 
@@ -76,7 +78,7 @@ export default function PushResult({ token, onReset }: Props) {
             <rect x="3" y="14" width="7" height="7" rx="1" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M14 14h2v2h-2zM18 14h3M14 18v3M18 18h3v3h-3zM20 14v2" />
           </svg>
-          {showQr ? 'Skrýt QR kód' : 'Zobrazit QR kód'}
+          {showQr ? t.result.hideQr : t.result.showQr}
         </button>
 
         {showQr && (
@@ -94,13 +96,13 @@ export default function PushResult({ token, onReset }: Props) {
 
       <div className="flex items-center justify-between pt-1 border-t border-[var(--border-col)]">
         <p className="text-xs text-[var(--muted-col)]">
-          Po vypršení limitů bude odkaz automaticky smazán.
+          {t.result.expireNote}
         </p>
         <button
           onClick={onReset}
           className="text-sm text-brand hover:text-brand-dark font-medium transition-colors shrink-0 ml-4"
         >
-          Vytvořit další →
+          {t.result.newPush}
         </button>
       </div>
     </div>

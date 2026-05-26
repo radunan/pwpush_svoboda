@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import SecretView from '@/components/SecretView'
+import SecretPageShell from '@/components/SecretPageShell'
 import { getBase } from '@/lib/pwpush'
 import type { Push } from '@/lib/pwpush'
 
-export const metadata: Metadata = { title: 'Tajemství' }
+export const metadata: Metadata = { title: 'Údaje' }
 
 export default async function SecretPage({
   params,
@@ -42,26 +42,14 @@ export default async function SecretPage({
     fetchError = true
   }
 
-  if (fetchError) {
-    return (
-      <div className="max-w-xl mx-auto px-4 py-10 text-center space-y-2">
-        <p className="font-medium text-[var(--fg)]">Nelze načíst tajemství</p>
-        <p className="text-sm text-[var(--muted-col)]">Zkontrolujte připojení k pwpush instanci.</p>
-      </div>
-    )
-  }
-
-  if (!push && !isLocked) return notFound()
+  if (!fetchError && !push && !isLocked) return notFound()
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6">
-      <div className="mb-4">
-        <h1 className="text-lg font-semibold text-[var(--fg)]">Sdílené tajemství</h1>
-        <p className="text-sm text-[var(--muted-col)] mt-0.5">
-          Byl vám sdílen odkaz na citlivé informace.
-        </p>
-      </div>
-      <SecretView initialPush={push} token={token} isLocked={isLocked} />
-    </div>
+    <SecretPageShell
+      push={push}
+      token={token}
+      isLocked={isLocked}
+      fetchError={fetchError}
+    />
   )
 }

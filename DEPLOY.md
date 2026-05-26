@@ -61,34 +61,43 @@ cd /opt/pwpush-ui
 
 ### 2. Prvotní nastavení pwpush — získání API tokenu
 
-Nejprve spusťte pouze pwpush, abyste mohli vytvořit firemní účet:
+Nejprve dočasně vystavte port pwpush, abyste mohli dokončit setup v prohlížeči:
 
 ```bash
+cat > docker-compose.override.yml << 'EOF'
+services:
+  pwpush:
+    ports:
+      - "5100:5100"
+EOF
+
 docker compose up pwpush -d
 ```
 
 pwpush při prvním spuštění vyžaduje **aktivační kód** — najdete ho v logu kontejneru:
 
 ```bash
-docker compose logs pwpush | grep -i "token\|code\|setup\|first"
+docker compose logs pwpush | grep -i "boot\|code\|setup\|first"
 ```
 
 Hledáte řádek podobný tomuto:
 ```
-First time run! Your setup token is: XXXXXXXXXXXXXXXX
+Boot Code: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Poté:
 1. Otevřete `http://adresa-serveru:5100` v prohlížeči
-   - Pokud je server bez GUI, použijte SSH tunel na svém počítači:
-     ```bash
-     ssh -L 5100:localhost:5100 user@adresa-serveru
-     ```
-     a otevřete `http://localhost:5100` lokálně
 2. Zadejte aktivační kód z logů
 3. Zaregistrujte firemní účet (např. `admin@severotisk.cz`)
 4. Po přihlášení přejděte na **Profile → API Access**
 5. Zkopírujte **API Token**
+
+Po dokončení setupu odstraňte override soubor a restartujte pwpush:
+
+```bash
+rm docker-compose.override.yml
+docker compose up -d pwpush
+```
 
 ---
 
@@ -132,7 +141,7 @@ docker compose ps
 | URL | Co zkontrolovat |
 |-----|-----------------|
 | `http://server:3000` | Zobrazí se formulář pro vytvoření push |
-| `http://server:3000/health` | Musí zobrazit verzi pwpush |
+| `http://server:3000/settings` | Musí zobrazit stav "nakonfigurován" a email |
 | `http://server:3000/dashboard` | Zobrazí seznam pushů |
 
 **Test end-to-end:**
@@ -216,9 +225,20 @@ docker compose down -v               # zastavení + smazání dat pwpush (!)
 → Zkontrolujte `.env.production` — musí obsahovat správný `PWPUSH_EMAIL` a `PWPUSH_TOKEN`
 → Po změně je nutný rebuild: `docker compose up -d --build`
 
-**Health stránka hlásí chybu připojení**
-→ Ověřte že pwpush běží: `docker compose ps`
-→ Zkontrolujte logy: `docker compose logs pwpush`
+**Vytvoření push hlásí chybu 503 / "Cannot connect"**
+→ Nejčastější příčina: špatný nebo placeholder token v `.env.production`
+→ Ověřte token přímo v pwpush: `http://server:5100` → Profile → API Access
+→ Po opravě tokenu je nutný rebuild: `docker compose up -d --build`
+
+**Stránka /settings ukazuje "nekonfigurováno" i po nastavení tokenů**
+→ Image byl postaven bez proměnných — spusťte `docker compose up -d --build`
+
+**Změny v `docker-compose.yml` se neprojevily**
+→ Kontejnery je potřeba rekreovat: `docker compose up --force-recreate -d`
+
+**pwpush není připraven při startu frontendu**
+→ Počkejte 30–60 s než pwpush (Rails) dobootuje, poté restartujte frontend:
+→ `docker compose restart frontend`
 
 **Chyba při buildu na ARM serveru** (Raspberry Pi apod.)
 → Přidejte do `docker-compose.yml` pod službu `pwpush`:

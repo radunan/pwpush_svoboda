@@ -2,9 +2,16 @@ services:
   pwpush:
     image: pglombardo/pwpush
     restart: unless-stopped
-    # port 5100 není exponován ven — dostupný pouze pro frontend uvnitř sítě
+    ports:
+      - "5100:5100"
     volumes:
       - pwpush_data:/opt/PasswordPusher/storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5100/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   frontend:
     build: .
@@ -14,10 +21,10 @@ services:
     env_file:
       - .env.production
     environment:
-      # přepíše PWPUSH_API_BASE z .env.production — uvnitř Dockeru je pwpush dostupný přes název služby
       PWPUSH_API_BASE: http://pwpush:5100
     depends_on:
-      - pwpush
+      pwpush:
+        condition: service_healthy
 
 volumes:
   pwpush_data:

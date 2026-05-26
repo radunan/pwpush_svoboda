@@ -1,22 +1,24 @@
+'use client'
+
 import Link from 'next/link'
 import ExpireButton from './ExpireButton'
 import type { Push } from '@/lib/pwpush'
+import { useT, useLang } from '@/context/LanguageContext'
+import { formatDate } from '@/lib/i18n'
 
 interface Props {
   pushes: Push[]
   expired?: boolean
 }
 
-function formatDate(iso: string | null) {
-  if (!iso) return '–'
-  return new Date(iso).toLocaleDateString('cs-CZ', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
-
 export default function DashboardTable({ pushes, expired = false }: Props) {
+  const t = useT()
+  const [locale] = useLang()
+
   if (pushes.length === 0) {
     return (
       <div className="py-10 text-center text-sm text-[var(--muted-col)]">
-        {expired ? 'Žádné expirované pushe.' : 'Žádné aktivní pushe.'}
+        {expired ? t.dashboard.noExpired : t.dashboard.noActive}
       </div>
     )
   }
@@ -26,11 +28,11 @@ export default function DashboardTable({ pushes, expired = false }: Props) {
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-[var(--card-bg)] border-b border-[var(--border-col)]">
-            <th className="px-3 py-2 text-left text-xs font-medium text-[var(--muted-col)] uppercase tracking-wide">Token</th>
-            <th className="px-3 py-2 text-left text-xs font-medium text-[var(--muted-col)] uppercase tracking-wide">Poznámka</th>
-            <th className="px-3 py-2 text-right text-xs font-medium text-[var(--muted-col)] uppercase tracking-wide">Zobrazení</th>
-            <th className="px-3 py-2 text-left text-xs font-medium text-[var(--muted-col)] uppercase tracking-wide">Vyprší</th>
-            <th className="px-3 py-2 text-right text-xs font-medium text-[var(--muted-col)] uppercase tracking-wide">Akce</th>
+            <th className="px-3 py-2 text-left text-xs font-medium text-[var(--muted-col)] uppercase tracking-wide">{t.dashboard.colToken}</th>
+            <th className="px-3 py-2 text-left text-xs font-medium text-[var(--muted-col)] uppercase tracking-wide">{t.dashboard.colNote}</th>
+            <th className="px-3 py-2 text-right text-xs font-medium text-[var(--muted-col)] uppercase tracking-wide">{t.dashboard.colViews}</th>
+            <th className="px-3 py-2 text-left text-xs font-medium text-[var(--muted-col)] uppercase tracking-wide">{t.dashboard.colExpires}</th>
+            <th className="px-3 py-2 text-right text-xs font-medium text-[var(--muted-col)] uppercase tracking-wide">{t.dashboard.colActions}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--border-col)]">
@@ -49,7 +51,7 @@ export default function DashboardTable({ pushes, expired = false }: Props) {
               </td>
               <td className="px-3 py-2 text-right tabular-nums">
                 {expired ? (
-                  <span className="text-[var(--muted-col)]">expirováno</span>
+                  <span className="text-[var(--muted-col)]">{t.dashboard.expiredStatus}</span>
                 ) : (
                   <span>
                     <span className="font-medium">{push.views_remaining}</span>
@@ -58,7 +60,7 @@ export default function DashboardTable({ pushes, expired = false }: Props) {
                 )}
               </td>
               <td className="px-3 py-2 text-[var(--muted-col)] tabular-nums">
-                {formatDate(push.expiration_date)}
+                {formatDate(push.expiration_date, locale)}
               </td>
               <td className="px-3 py-2 text-right">
                 <div className="flex justify-end items-center gap-3">
@@ -66,7 +68,7 @@ export default function DashboardTable({ pushes, expired = false }: Props) {
                     href={`/dashboard/${push.url_token}/audit`}
                     className="text-xs text-[var(--muted-col)] hover:text-[var(--fg)] hover:underline"
                   >
-                    Audit
+                    {t.dashboard.audit}
                   </Link>
                   {!expired && <ExpireButton token={push.url_token} />}
                 </div>
