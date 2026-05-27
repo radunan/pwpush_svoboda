@@ -88,4 +88,4 @@ Všechna komunikace s pwpush API probíhá přes Next.js route handlers, které 
 | `/api/pushes/[token]/audit` | GET    | Audit log                                |
 | `/api/pushes/active`        | GET    | Aktivní pushe                            |
 | `/api/pushes/expired`       | GET    | Expirované pushe                         |
-# pwpush_severotisk
+# pwpush_svoboda

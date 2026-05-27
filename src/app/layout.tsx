@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: { default: 'Severotisk – Sdílení údajů', template: '%s | Severotisk' },
+  title: { default: 'Svoboda Press – Sdílení údajů', template: '%s | Svoboda Press' },
   description: 'Bezpečně sdílejte hesla a citlivé informace pomocí odkazů s expirací',
 }
 

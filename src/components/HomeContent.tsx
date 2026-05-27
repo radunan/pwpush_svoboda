@@ -9,7 +9,12 @@ export default function HomeContent() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <div className="mb-8">
-        <div className="h-1 w-24 rounded-full bg-brand-yellow mb-5" />
+        <div className="flex h-1 w-24 mb-5 overflow-hidden rounded-full">
+          <div className="flex-1 bg-[#FDEF01]" />
+          <div className="flex-1 bg-[#E90189]" />
+          <div className="flex-1 bg-[#01ABEC]" />
+          <div className="flex-1 bg-[#5D5D5D]" />
+        </div>
         <h1 className="text-2xl font-bold text-[var(--fg)] tracking-tight">{t.home.heading}</h1>
         <p className="mt-2 text-base text-[var(--muted-col)] leading-relaxed">
           {t.home.description}

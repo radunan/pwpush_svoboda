@@ -16,13 +16,19 @@ export default function Nav() {
   const [locale, setLocale] = useLang()
 
   return (
-    <header className="h-14 border-b border-[var(--border-col)] flex items-center px-6 gap-6 bg-white shadow-sm">
+    <header className="relative h-14 flex items-center px-6 gap-6 bg-white shadow-sm">
+      <div className="absolute bottom-0 left-0 right-0 flex h-[3px]">
+        <div className="flex-1 bg-[#FDEF01]" />
+        <div className="flex-1 bg-[#E90189]" />
+        <div className="flex-1 bg-[#01ABEC]" />
+        <div className="flex-1 bg-[#5D5D5D]" />
+      </div>
       <Link href="/" className="flex items-center shrink-0">
         <Image
-          src="/severotisk_logo.png"
-          alt="Severotisk"
+          src="/svoboda_logo.svg"
+          alt="Svoboda Press"
           width={200}
-          height={22}
+          height={28}
           priority
           unoptimized
           className="h-7 w-auto"

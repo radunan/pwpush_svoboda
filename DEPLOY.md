@@ -1,4 +1,4 @@
-# Nasazení – Severotisk Sdílení tajemství
+# Nasazení – Svoboda Press – Sdílení tajemství
 
 Průvodce pro nasazení interního nástroje na sdílení hesel a citlivých informací.
 
@@ -53,7 +53,7 @@ cd /opt/pwpush-ui
 nebo přenos přes scp:
 
 ```bash
-scp -r ./pwpush_severotisk user@server:/opt/pwpush-ui
+scp -r ./pwpush_svoboda user@server:/opt/pwpush-ui
 cd /opt/pwpush-ui
 ```
 
@@ -88,7 +88,7 @@ Boot Code: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 Poté:
 1. Otevřete `http://adresa-serveru:5100` v prohlížeči
 2. Zadejte aktivační kód z logů
-3. Zaregistrujte firemní účet (např. `admin@severotisk.cz`)
+3. Zaregistrujte firemní účet (např. `admin@svoboda.cz`)
 4. Po přihlášení přejděte na **Profile → API Access**
 5. Zkopírujte **API Token**
 
@@ -111,7 +111,7 @@ nano .env.production
 Vyplňte skutečné hodnoty:
 
 ```env
-PWPUSH_EMAIL=admin@severotisk.cz
+PWPUSH_EMAIL=admin@svoboda.cz
 PWPUSH_TOKEN=zkopirovaný_token_z_pwpush
 ```
 
@@ -165,7 +165,7 @@ Vložte:
 ```nginx
 server {
     listen 80;
-    server_name hesla.severotisk.cz;  # nebo IP adresa serveru
+    server_name hesla.svoboda.cz;  # nebo IP adresa serveru
 
     location / {
         proxy_pass http://localhost:3000;
@@ -189,7 +189,7 @@ systemctl reload nginx
 
 ```bash
 apt install certbot python3-certbot-nginx -y
-certbot --nginx -d hesla.severotisk.cz
+certbot --nginx -d hesla.svoboda.cz
 ```
 
 ---

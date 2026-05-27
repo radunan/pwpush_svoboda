@@ -13,7 +13,12 @@ export default function SettingsContent({ hasCredentials, email }: Props) {
   return (
     <div className="max-w-lg mx-auto px-4 py-10">
       <div className="mb-8">
-        <div className="h-1 w-10 rounded-full bg-brand-yellow mb-5" />
+        <div className="flex h-1 w-10 mb-5 overflow-hidden rounded-full">
+          <div className="flex-1 bg-[#FDEF01]" />
+          <div className="flex-1 bg-[#E90189]" />
+          <div className="flex-1 bg-[#01ABEC]" />
+          <div className="flex-1 bg-[#5D5D5D]" />
+        </div>
         <h1 className="text-2xl font-bold text-[var(--fg)] tracking-tight">{t.settings.title}</h1>
         <p className="mt-2 text-[var(--muted-col)]">
           {t.settings.subtitle}
@@ -57,7 +62,7 @@ export default function SettingsContent({ hasCredentials, email }: Props) {
           <p>{t.settings.warningText}</p>
           <p className="mt-2">{t.settings.warningInstruction}</p>
           <pre className="mt-1 text-xs bg-amber-100 rounded p-2 font-mono">
-{`PWPUSH_EMAIL=admin@severotisk.cz
+{`PWPUSH_EMAIL=admin@svoboda.cz
 PWPUSH_TOKEN=vas_api_token`}
           </pre>
           <p className="text-xs text-amber-700 mt-1">
